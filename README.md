@@ -8,6 +8,10 @@
   <img alt="badge-codesize" src="https://img.shields.io/github/languages/code-size/GaryNLOL/Chess?style=for-the-badge">
 </p>
 
+<p align="center">
+  <img alt="chess" src="https://user-images.githubusercontent.com/46727048/129751762-0249c064-0756-463d-af85-ac5d3f896380.png">
+</p>
+
 ## What is Chess?
 Chess is just a chess game made for fun.
 
