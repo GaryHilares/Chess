@@ -1,12 +1,12 @@
-#include "../include/gameController.hpp"
+#include "../include/GameController.hpp"
 
-gameController::gameController(): board({
-new piece(piece::Black,piece::Rook),new piece(piece::Black,piece::Pawn),nullptr,nullptr,nullptr,nullptr,new piece(piece::White,piece::Pawn),new piece(piece::White,piece::Rook),
-new piece(piece::Black,piece::Knight),new piece(piece::Black,piece::Pawn),nullptr,nullptr,nullptr,nullptr,new piece(piece::White,piece::Pawn),new piece(piece::White,piece::Knight),
-new piece(piece::Black,piece::Bishop),new piece(piece::Black,piece::Pawn),nullptr,nullptr,nullptr,nullptr,new piece(piece::White,piece::Pawn),new piece(piece::White,piece::Bishop),
-new piece(piece::Black,piece::Queen),new piece(piece::Black,piece::Pawn),nullptr,nullptr,nullptr,nullptr,new piece(piece::White,piece::Pawn),new piece(piece::White,piece::Queen),
-new piece(piece::Black,piece::King),new piece(piece::Black,piece::Pawn),nullptr,nullptr,nullptr,nullptr,new piece(piece::White,piece::Pawn),new piece(piece::White,piece::King),
-new piece(piece::Black,piece::Bishop),new piece(piece::Black,piece::Pawn),nullptr,nullptr,nullptr,nullptr,new piece(piece::White,piece::Pawn),new piece(piece::White,piece::Bishop),
-new piece(piece::Black,piece::Knight),new piece(piece::Black,piece::Pawn),nullptr,nullptr,nullptr,nullptr,new piece(piece::White,piece::Pawn),new piece(piece::White,piece::Knight),
-new piece(piece::Black,piece::Rook),new piece(piece::Black,piece::Pawn),nullptr,nullptr,nullptr,nullptr,new piece(piece::White,piece::Pawn),new piece(piece::White,piece::Rook)
-}), turnColor(piece::Color::White), pawnDoubleMovedLastTurn(nullptr){}
+GameController::GameController(): board({
+new Piece(Piece::Black,Piece::Rook),new Piece(Piece::Black,Piece::Pawn),nullptr,nullptr,nullptr,nullptr,new Piece(Piece::White,Piece::Pawn),new Piece(Piece::White,Piece::Rook),
+new Piece(Piece::Black,Piece::Knight),new Piece(Piece::Black,Piece::Pawn),nullptr,nullptr,nullptr,nullptr,new Piece(Piece::White,Piece::Pawn),new Piece(Piece::White,Piece::Knight),
+new Piece(Piece::Black,Piece::Bishop),new Piece(Piece::Black,Piece::Pawn),nullptr,nullptr,nullptr,nullptr,new Piece(Piece::White,Piece::Pawn),new Piece(Piece::White,Piece::Bishop),
+new Piece(Piece::Black,Piece::Queen),new Piece(Piece::Black,Piece::Pawn),nullptr,nullptr,nullptr,nullptr,new Piece(Piece::White,Piece::Pawn),new Piece(Piece::White,Piece::Queen),
+new Piece(Piece::Black,Piece::King),new Piece(Piece::Black,Piece::Pawn),nullptr,nullptr,nullptr,nullptr,new Piece(Piece::White,Piece::Pawn),new Piece(Piece::White,Piece::King),
+new Piece(Piece::Black,Piece::Bishop),new Piece(Piece::Black,Piece::Pawn),nullptr,nullptr,nullptr,nullptr,new Piece(Piece::White,Piece::Pawn),new Piece(Piece::White,Piece::Bishop),
+new Piece(Piece::Black,Piece::Knight),new Piece(Piece::Black,Piece::Pawn),nullptr,nullptr,nullptr,nullptr,new Piece(Piece::White,Piece::Pawn),new Piece(Piece::White,Piece::Knight),
+new Piece(Piece::Black,Piece::Rook),new Piece(Piece::Black,Piece::Pawn),nullptr,nullptr,nullptr,nullptr,new Piece(Piece::White,Piece::Pawn),new Piece(Piece::White,Piece::Rook)
+}), turn_color(Piece::Color::White), pawn_double_moved_last_turn(nullptr){}

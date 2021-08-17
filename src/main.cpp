@@ -1,7 +1,7 @@
-#include "../include/piece.hpp"
-#include "../include/square.hpp"
-#include "../include/gameController.hpp"
-#include "../include/gameUI.hpp"
+#include "../include/Piece.hpp"
+#include "../include/Square.hpp"
+#include "../include/GameController.hpp"
+#include "../include/GameUI.hpp"
 #include <SFML/Graphics.hpp>
 
 //ISSUE: O-O in check.
@@ -11,8 +11,8 @@ int main()
     sf::RenderWindow window(sf::VideoMode(800,800),"Chess1");
     window.setFramerateLimit(60);
     bool focused = true;
-    gameController game;
-    gameUI ui(game);
+    GameController game;
+    GameUI ui(game);
     while(window.isOpen())
     {
         sf::Event event;

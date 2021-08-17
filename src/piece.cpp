@@ -1,3 +1,3 @@
-#include "../include/piece.hpp"
+#include "../include/Piece.hpp"
 
-piece::piece(Color _color, Type _type): color(_color), type(_type), moved(false){};
+Piece::Piece(Color _color, Type _type): color(_color), type(_type), moved(false){};
