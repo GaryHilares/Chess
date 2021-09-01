@@ -2,13 +2,13 @@
 #include "piece.hpp"
 #include <array>
 
-class gameController
+class GameController
 {
 private:
-    std::array<piece*,64> board;
-    piece::Color turnColor;
-    piece* pawnDoubleMovedLastTurn;
-    friend class gameUI;
+    std::array<Piece*,64> board;
+    Piece::Color turn_color;
+    Piece* pawn_double_moved_last_turn;
+    friend class GameUI;
 public:
-    gameController();
+    GameController();
 };

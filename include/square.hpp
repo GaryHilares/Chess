@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 
-struct square
+struct Square
 {
 public:
     enum column{a = 1, b = 2, c = 3, d = 4, e = 5, f = 6, g = 7, h = 8};
@@ -13,6 +13,6 @@ public:
     short int getRow() const;
     static int columnToInt(column colCode);
     static int rowToInt(short int rowCode);
-    square(column _col, unsigned short int _row);
-    bool operator==(const square other) const;
+    Square(column _col, unsigned short int _row);
+    bool operator==(const Square other) const;
 };

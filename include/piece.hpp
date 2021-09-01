@@ -1,6 +1,6 @@
 #pragma once
 
-struct piece
+struct Piece
 {
 public:
     enum Color{White=0,Black=1};
@@ -8,5 +8,5 @@ public:
     Color color;
     Type type;
     bool moved;
-    piece(Color _color, Type _type);
+    Piece(Color _color, Type _type);
 };
