@@ -27,5 +27,4 @@ Chess is just a chess game made for fun.
 - SFML.
 
 ## Useful links
-- [Project's Style Guide](https://github.com/GaryNLOL/Style-Guides/).
 - [Discord Server.](https://discord.gg/RQN6gcDQwX)
