@@ -1,11 +1,11 @@
 <h1 align="center">Chess</h1>
 
 <p align="center">
-  <img alt="badge-lastcommit" src="https://img.shields.io/github/last-commit/GaryStriving/Chess?style=for-the-badge">
-  <img alt="badge-openissues" src="https://img.shields.io/github/issues-raw/GaryStriving/Chess?style=for-the-badge">
-  <img alt="badge-license" src="https://img.shields.io/github/license/GaryStriving/Chess?style=for-the-badge">
-  <img alt="badge-contributors" src="https://img.shields.io/github/contributors/GaryStriving/Chess?style=for-the-badge">
-  <img alt="badge-codesize" src="https://img.shields.io/github/languages/code-size/GaryStriving/Chess?style=for-the-badge">
+  <img alt="badge-lastcommit" src="https://img.shields.io/github/last-commit/GaryHilares/Chess?style=for-the-badge">
+  <img alt="badge-openissues" src="https://img.shields.io/github/issues-raw/GaryHilares/Chess?style=for-the-badge">
+  <img alt="badge-license" src="https://img.shields.io/github/license/GaryHilares/Chess?style=for-the-badge">
+  <img alt="badge-contributors" src="https://img.shields.io/github/contributors/GaryHilares/Chess?style=for-the-badge">
+  <img alt="badge-codesize" src="https://img.shields.io/github/languages/code-size/GaryHilares/Chess?style=for-the-badge">
 </p>
 
 <p align="center">
