@@ -21,11 +21,16 @@ endif()
 
 set(SFML_ROOT_DIR "extlibs/SFML-2.5.1")
 set(SFML_DIR "${SFML_ROOT_DIR}/lib/cmake/SFML")
-find_package(SFML COMPONENTS main graphics window system REQUIRED)
+
+if(WIN32)
+    find_package(SFML COMPONENTS main graphics window system REQUIRED)
+else()
+    find_package(SFML COMPONENTS graphics window system REQUIRED)
+endif()
 
 set(CPPSources
     "src/GameController.cpp"
-    "src/gameUI.cpp"
+    "src/GameUI.cpp"
     "src/main.cpp"
     "src/Piece.cpp"
     "src/Square.cpp"
@@ -40,20 +45,27 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_executable(Chess ${CPPSources})
 endif()
 
-set(LINK_LIBRARIES sfml-main sfml-graphics sfml-window sfml-system stdc++fs)
+if(WIN32)
+    set(LINK_LIBRARIES sfml-main sfml-graphics sfml-window sfml-system stdc++fs)
+else()
+    set(LINK_LIBRARIES sfml-graphics sfml-window sfml-system stdc++fs)
+endif()
+
 set(INCLUDE_DIRS ${SFML_ROOT_DIR}/include)
 target_include_directories(Chess PRIVATE ${INCLUDE_DIRS})
 target_link_libraries(Chess ${LINK_LIBRARIES})
 
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    set(SFML_DLL_FILENAMES "sfml-graphics-2.dll" "sfml-system-2.dll" "sfml-window-2.dll")
-elseif(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "Tests")
-    set(SFML_DLL_FILENAMES "sfml-graphics-d-2.dll" "sfml-system-d-2.dll" "sfml-window-d-2.dll")
-endif()
+if(WIN32)
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        set(SFML_DLL_FILENAMES "sfml-graphics-2.dll" "sfml-system-2.dll" "sfml-window-2.dll")
+    elseif(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "Tests")
+        set(SFML_DLL_FILENAMES "sfml-graphics-d-2.dll" "sfml-system-d-2.dll" "sfml-window-d-2.dll")
+    endif()
 
-foreach(FILENAME ${SFML_DLL_FILENAMES})
-    file(COPY "${SFML_ROOT_DIR}/bin/${FILENAME}" DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
-endforeach()
+    foreach(FILENAME ${SFML_DLL_FILENAMES})
+        file(COPY "${SFML_ROOT_DIR}/bin/${FILENAME}" DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+    endforeach()
+endif()
 
 make_directory("${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets")
 file(COPY "${PROJECT_SOURCE_DIR}/ChessPieces.png" DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
