@@ -10,7 +10,7 @@ private:
     static constexpr int square_size = 100;
     static constexpr int piece_size_in_texture = 200;
     std::array<sf::Sprite, 12> pieces_sprites;
-    GameController& game;
+    ChessGame& game;
     Piece* moving_piece;
     Square* last_square;
     sf::Texture pieces_texture;
@@ -22,7 +22,7 @@ private:
     Piece* readBoard(Square target) const;
 
 public:
-    GameUI(GameController& new_game);
+    GameUI(ChessGame& new_game);
     ~GameUI();
     virtual void draw(sf::RenderTarget& target, sf::RenderStates state) const;
     Square getSquare(float pos_x, float pos_y);

@@ -296,7 +296,7 @@ Square GameUI::getSquare(float pos_x, float pos_y)
     return Square(static_cast<Square::column>(new_pos_x), new_pos_y);
 }
 
-GameUI::GameUI(GameController& new_game)
+GameUI::GameUI(ChessGame& new_game)
     : game(new_game)
     , moving_piece(nullptr)
     , last_square(nullptr)

@@ -1,6 +1,6 @@
 #include "../include/GameController.hpp"
 
-GameController::GameController()
+ChessGame::ChessGame()
     : board({ new Piece(Piece::Black, Piece::Rook), new Piece(Piece::Black, Piece::Pawn), nullptr, nullptr, nullptr, nullptr, new Piece(Piece::White, Piece::Pawn), new Piece(Piece::White, Piece::Rook),
         new Piece(Piece::Black, Piece::Knight), new Piece(Piece::Black, Piece::Pawn), nullptr, nullptr, nullptr, nullptr, new Piece(Piece::White, Piece::Pawn), new Piece(Piece::White, Piece::Knight),
         new Piece(Piece::Black, Piece::Bishop), new Piece(Piece::Black, Piece::Pawn), nullptr, nullptr, nullptr, nullptr, new Piece(Piece::White, Piece::Pawn), new Piece(Piece::White, Piece::Bishop),

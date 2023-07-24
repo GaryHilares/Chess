@@ -1,19 +1,31 @@
+/**
+ * @file main.cpp
+ * @brief Declares main.cpp, the entrypoint of Chess.cpp.
+ */
 #include "../include/GameController.hpp"
 #include "../include/GameUI.hpp"
 #include "../include/Piece.hpp"
 #include "../include/Square.hpp"
 #include <SFML/Graphics.hpp>
 
-// ISSUE: O-O in check.
-
+/**
+ * @brief Entrypoint of the program. Opens a window running chess and iterates over its event loop.
+ * @return Returns 0 unless there is an error.
+ */
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(800, 800), "Chess1");
+    // Open and configure the window
+    sf::RenderWindow window(sf::VideoMode(800, 800), "New Game - Chess.cpp");
     window.setFramerateLimit(60);
+
+    // Set initial values
     bool focused = true;
-    GameController game;
+    ChessGame game;
     GameUI ui(game);
+
+    // Run loop until the window is closed
     while (window.isOpen()) {
+        // Event loop
         sf::Event event;
         if (window.pollEvent(event)) {
             switch (event.type) {
@@ -30,6 +42,8 @@ int main()
                 break;
             }
         }
+
+        // Update the window only if it is focused
         if (focused) {
             ui.update(window);
             window.clear(sf::Color::Magenta);

@@ -2,7 +2,8 @@
 #include "Piece.hpp"
 #include <array>
 
-class GameController {
+/// TODO: Disable castling when a player's king is in check.
+class ChessGame {
 private:
     std::array<Piece*, 64> board;
     Piece::Color turn_color;
@@ -10,5 +11,5 @@ private:
     friend class GameUI;
 
 public:
-    GameController();
+    ChessGame();
 };
