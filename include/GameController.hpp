@@ -6,7 +6,7 @@
 class ChessGame {
 private:
     std::array<Piece*, 64> board;
-    Piece::Color turn_color;
+    PieceColor turn_color;
     Piece* pawn_double_moved_last_turn;
     friend class GameUI;
 
