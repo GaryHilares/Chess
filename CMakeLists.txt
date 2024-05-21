@@ -32,7 +32,7 @@ set(CPPSources
     "src/GameController.cpp"
     "src/GameUI.cpp"
     "src/main.cpp"
-    "src/Piece.cpp"
+    "src/model/Piece.cpp"
     "src/Square.cpp"
     )
 

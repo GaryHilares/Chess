@@ -4,8 +4,8 @@
  */
 #include "../include/GameController.hpp"
 #include "../include/GameUI.hpp"
-#include "../include/Piece.hpp"
 #include "../include/Square.hpp"
+#include "../include/model/Piece.hpp"
 #include <SFML/Graphics.hpp>
 
 /**

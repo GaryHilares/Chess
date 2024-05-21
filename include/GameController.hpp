@@ -1,6 +1,7 @@
 #pragma once
-#include "Piece.hpp"
+#include "model/Piece.hpp"
 #include <array>
+#include <optional>
 
 /// TODO: Disable castling when a player's king is in check.
 class ChessGame {

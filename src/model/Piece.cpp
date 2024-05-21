@@ -1,4 +1,4 @@
-#include "../include/Piece.hpp"
+#include "../../include/model/Piece.hpp"
 #include <cassert>
 
 Piece::Piece(PieceColor color, PieceType type)
