@@ -2,9 +2,9 @@
  * @file main.cpp
  * @brief Declares main.cpp, the entrypoint of Chess.cpp.
  */
-#include "../include/GameController.hpp"
 #include "../include/GameUI.hpp"
 #include "../include/Square.hpp"
+#include "../include/model/GameState.hpp"
 #include "../include/model/Piece.hpp"
 #include <SFML/Graphics.hpp>
 
@@ -20,7 +20,7 @@ int main()
 
     // Set initial values
     bool focused = true;
-    ChessGame game;
+    GameState game;
     GameUI ui(game);
 
     // Run loop until the window is closed
