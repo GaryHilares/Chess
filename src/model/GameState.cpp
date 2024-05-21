@@ -31,7 +31,7 @@ Piece* GameState::readBoard(short int col, short int row) const
     return board[col * 8 + row];
 }
 
-bool GameState::existInterrumptions(Square source, Square destiny) const
+bool GameState::existInterrumptions(BoardCoordinate source, BoardCoordinate destiny) const
 {
     if (source.getCol() == destiny.getCol()) {
         short int modifier = source.getRow() < destiny.getRow() ? 1 : -1;

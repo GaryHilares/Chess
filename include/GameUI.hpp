@@ -11,14 +11,14 @@ private:
     std::array<sf::Sprite, 12> pieces_sprites;
     GameState& m_game;
     Piece* moving_piece;
-    Square* last_square;
+    BoardCoordinate* last_square;
     sf::Texture pieces_texture;
-    bool isLegalMove(const Piece moving, const Square source, const Square destiny) const;
+    bool isLegalMove(const Piece moving, const BoardCoordinate source, const BoardCoordinate destiny) const;
 
 public:
     GameUI(GameState& new_game);
     ~GameUI();
     virtual void draw(sf::RenderTarget& target, sf::RenderStates state) const;
-    Square getSquare(float pos_x, float pos_y);
+    BoardCoordinate getSquare(float pos_x, float pos_y);
     void update(sf::RenderWindow& window);
 };

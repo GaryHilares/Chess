@@ -3,7 +3,7 @@
  * @brief Declares main.cpp, the entrypoint of Chess.cpp.
  */
 #include "../include/GameUI.hpp"
-#include "../include/Square.hpp"
+#include "../include/model/BoardCoordinate.hpp"
 #include "../include/model/GameState.hpp"
 #include "../include/model/Piece.hpp"
 #include <SFML/Graphics.hpp>

@@ -1,6 +1,6 @@
 #include "../include/GameUI.hpp"
 
-bool GameUI::isLegalMove(const Piece moving, const Square source, const Square destiny) const
+bool GameUI::isLegalMove(const Piece moving, const BoardCoordinate source, const BoardCoordinate destiny) const
 {
     if (moving.getColor() != m_game.getTurnColor()) {
         return false;
@@ -9,10 +9,10 @@ bool GameUI::isLegalMove(const Piece moving, const Square source, const Square d
         return false;
     const short int movedX = abs(source.getCol() - destiny.getCol());
     const short int movedY = abs(source.getRow() - destiny.getRow());
-    const Square kingPosition = [&]() {
+    const BoardCoordinate kingPosition = [&]() {
         for (short int i = 1; i <= 8; i++) {
             for (short int j = 1; j <= 8; j++) {
-                Square cur(static_cast<Square::column>(i), j);
+                BoardCoordinate cur(static_cast<BoardCoordinate::Column>(i), j);
                 if (m_game.readBoard(cur.getCol(), cur.getRow()) != nullptr && m_game.readBoard(cur.getCol(), cur.getRow())->getType() == PieceType::King && m_game.readBoard(cur.getCol(), cur.getRow())->getColor() == moving.getColor())
                     return cur;
             }
@@ -47,9 +47,9 @@ bool GameUI::isLegalMove(const Piece moving, const Square source, const Square d
     case PieceType::King:
         if (m_game.existInterrumptions(source, destiny))
             return false;
-        if (destiny.getCol() == Square::columnToInt(Square::column::g) && m_game.board[Square::columnToInt(Square::column::h) * 8 + source.getRow()] != nullptr && !m_game.board[Square::columnToInt(Square::column::h) * 8 + source.getRow()]->hasMoved() && movedY == 0 && !moving.hasMoved() && isLegalMove(moving, source, Square(Square::column::f, moving.getColor() == PieceColor::White ? 1 : 8)))
+        if (destiny.getCol() == BoardCoordinate::columnToInt(BoardCoordinate::Column::G) && m_game.board[BoardCoordinate::columnToInt(BoardCoordinate::Column::H) * 8 + source.getRow()] != nullptr && !m_game.board[BoardCoordinate::columnToInt(BoardCoordinate::Column::H) * 8 + source.getRow()]->hasMoved() && movedY == 0 && !moving.hasMoved() && isLegalMove(moving, source, BoardCoordinate(BoardCoordinate::Column::F, moving.getColor() == PieceColor::White ? 1 : 8)))
             return true;
-        if (destiny.getCol() == Square::columnToInt(Square::column::c) && m_game.board[Square::columnToInt(Square::column::a) * 8 + source.getRow()] != nullptr && !m_game.board[Square::columnToInt(Square::column::a) * 8 + source.getRow()]->hasMoved() && movedY == 0 && !moving.hasMoved() && isLegalMove(moving, source, Square(Square::column::d, moving.getColor() == PieceColor::White ? 1 : 8)))
+        if (destiny.getCol() == BoardCoordinate::columnToInt(BoardCoordinate::Column::C) && m_game.board[BoardCoordinate::columnToInt(BoardCoordinate::Column::A) * 8 + source.getRow()] != nullptr && !m_game.board[BoardCoordinate::columnToInt(BoardCoordinate::Column::A) * 8 + source.getRow()]->hasMoved() && movedY == 0 && !moving.hasMoved() && isLegalMove(moving, source, BoardCoordinate(BoardCoordinate::Column::D, moving.getColor() == PieceColor::White ? 1 : 8)))
             return true;
         if (movedX > 1 || movedY > 1)
             return false;
@@ -75,14 +75,14 @@ bool GameUI::isLegalMove(const Piece moving, const Square source, const Square d
             return false;
         return true;
     case PieceType::Pawn:
-        if ((moving.getColor() == PieceColor::White && Square::rowToInt(source.getRow()) > Square::rowToInt(destiny.getRow())) || (moving.getColor() == PieceColor::Black && Square::rowToInt(source.getRow()) < Square::rowToInt(destiny.getRow())))
+        if ((moving.getColor() == PieceColor::White && BoardCoordinate::rowToInt(source.getRow()) > BoardCoordinate::rowToInt(destiny.getRow())) || (moving.getColor() == PieceColor::Black && BoardCoordinate::rowToInt(source.getRow()) < BoardCoordinate::rowToInt(destiny.getRow())))
             return false;
         if (m_game.existInterrumptions(source, destiny))
             return false;
-        if (((moving.getColor() == PieceColor::White && source.getRow() == Square::rowToInt(2)) || (moving.getColor() == PieceColor::Black && source.getRow() == Square::rowToInt(7)))
+        if (((moving.getColor() == PieceColor::White && source.getRow() == BoardCoordinate::rowToInt(2)) || (moving.getColor() == PieceColor::Black && source.getRow() == BoardCoordinate::rowToInt(7)))
             && movedX == 0 && movedY == 2 && this->m_game.board[destiny.getCol() * 8 + destiny.getRow()] == nullptr)
             return true;
-        else if (movedX == 1 && movedY == 1 && (this->m_game.board[destiny.getCol() * 8 + destiny.getRow()] != nullptr || (source.getRow() == Square::rowToInt(5) && moving.getColor() == PieceColor::White && this->m_game.board[destiny.getCol() * 8 + destiny.getRow() + 1] != nullptr && this->m_game.board[destiny.getCol() * 8 + destiny.getRow() + 1]->getType() == PieceType::Pawn && this->m_game.board[destiny.getCol() * 8 + destiny.getRow() + 1] == this->m_game.pawn_double_moved_last_turn) || (source.getRow() == Square::rowToInt(4) && moving.getColor() == PieceColor::Black && this->m_game.board[destiny.getCol() * 8 + destiny.getRow() - 1] != nullptr && this->m_game.board[destiny.getCol() * 8 + destiny.getRow() - 1]->getType() == PieceType::Pawn && this->m_game.board[destiny.getCol() * 8 + destiny.getRow() - 1] == this->m_game.pawn_double_moved_last_turn)))
+        else if (movedX == 1 && movedY == 1 && (this->m_game.board[destiny.getCol() * 8 + destiny.getRow()] != nullptr || (source.getRow() == BoardCoordinate::rowToInt(5) && moving.getColor() == PieceColor::White && this->m_game.board[destiny.getCol() * 8 + destiny.getRow() + 1] != nullptr && this->m_game.board[destiny.getCol() * 8 + destiny.getRow() + 1]->getType() == PieceType::Pawn && this->m_game.board[destiny.getCol() * 8 + destiny.getRow() + 1] == this->m_game.pawn_double_moved_last_turn) || (source.getRow() == BoardCoordinate::rowToInt(4) && moving.getColor() == PieceColor::Black && this->m_game.board[destiny.getCol() * 8 + destiny.getRow() - 1] != nullptr && this->m_game.board[destiny.getCol() * 8 + destiny.getRow() - 1]->getType() == PieceType::Pawn && this->m_game.board[destiny.getCol() * 8 + destiny.getRow() - 1] == this->m_game.pawn_double_moved_last_turn)))
             return true;
         else if (movedX != 0 || movedY != 1)
             return false;
@@ -96,10 +96,10 @@ void GameUI::update(sf::RenderWindow& window)
 {
     sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
     if ((sf::Mouse::isButtonPressed(sf::Mouse::Left) && moving_piece == nullptr)) {
-        this->last_square = new Square(getSquare(mousePos.x, mousePos.y));
+        this->last_square = new BoardCoordinate(getSquare(mousePos.x, mousePos.y));
         std::swap(this->moving_piece, this->m_game.board[this->last_square->getCol() * 8 + this->last_square->getRow()]);
     } else if ((!sf::Mouse::isButtonPressed(sf::Mouse::Left) && this->moving_piece != nullptr)) {
-        Square pressedSquare = getSquare(mousePos.x, mousePos.y);
+        BoardCoordinate pressedSquare = getSquare(mousePos.x, mousePos.y);
         if (this->isLegalMove(*this->moving_piece, *this->last_square, pressedSquare)) {
             this->m_game.pawn_double_moved_last_turn = nullptr;
             this->moving_piece->setAsMoved();
@@ -114,14 +114,14 @@ void GameUI::update(sf::RenderWindow& window)
             }
             if (this->m_game.board[pressedSquare.getCol() * 8 + pressedSquare.getRow()] != nullptr)
                 delete this->m_game.board[pressedSquare.getCol() * 8 + pressedSquare.getRow()];
-            if (this->moving_piece->getType() == PieceType::King && this->last_square->getCol() == Square::columnToInt(Square::column::e) && pressedSquare.getCol() == Square::columnToInt(Square::column::c)) {
-                this->m_game.board[Square::columnToInt(Square::column::a) * 8 + this->last_square->getRow()]->setAsMoved();
-                std::swap(this->m_game.board[Square::columnToInt(Square::column::a) * 8 + this->last_square->getRow()], this->m_game.board[Square::columnToInt(Square::column::d) * 8 + this->last_square->getRow()]);
+            if (this->moving_piece->getType() == PieceType::King && this->last_square->getCol() == BoardCoordinate::columnToInt(BoardCoordinate::Column::E) && pressedSquare.getCol() == BoardCoordinate::columnToInt(BoardCoordinate::Column::C)) {
+                this->m_game.board[BoardCoordinate::columnToInt(BoardCoordinate::Column::A) * 8 + this->last_square->getRow()]->setAsMoved();
+                std::swap(this->m_game.board[BoardCoordinate::columnToInt(BoardCoordinate::Column::A) * 8 + this->last_square->getRow()], this->m_game.board[BoardCoordinate::columnToInt(BoardCoordinate::Column::D) * 8 + this->last_square->getRow()]);
 
-            } else if (this->moving_piece->getType() == PieceType::King && this->last_square->getCol() == Square::columnToInt(Square::column::e) && pressedSquare.getCol() == Square::columnToInt(Square::column::g)) {
-                this->m_game.board[Square::columnToInt(Square::column::h) * 8 + this->last_square->getRow()]->setAsMoved();
-                std::swap(this->m_game.board[Square::columnToInt(Square::column::h) * 8 + this->last_square->getRow()], this->m_game.board[Square::columnToInt(Square::column::f) * 8 + this->last_square->getRow()]);
-            } else if (this->moving_piece->getType() == PieceType::Pawn && pressedSquare.getRow() == Square::rowToInt(this->moving_piece->getColor() == PieceColor::White ? 8 : 1)) {
+            } else if (this->moving_piece->getType() == PieceType::King && this->last_square->getCol() == BoardCoordinate::columnToInt(BoardCoordinate::Column::E) && pressedSquare.getCol() == BoardCoordinate::columnToInt(BoardCoordinate::Column::G)) {
+                this->m_game.board[BoardCoordinate::columnToInt(BoardCoordinate::Column::H) * 8 + this->last_square->getRow()]->setAsMoved();
+                std::swap(this->m_game.board[BoardCoordinate::columnToInt(BoardCoordinate::Column::H) * 8 + this->last_square->getRow()], this->m_game.board[BoardCoordinate::columnToInt(BoardCoordinate::Column::F) * 8 + this->last_square->getRow()]);
+            } else if (this->moving_piece->getType() == PieceType::Pawn && pressedSquare.getRow() == BoardCoordinate::rowToInt(this->moving_piece->getColor() == PieceColor::White ? 8 : 1)) {
                 PieceType toPromote;
                 while (true) {
                     sf::Event event;
@@ -242,13 +242,31 @@ GameUI::~GameUI()
         delete last_square;
 }
 
-Square GameUI::getSquare(float pos_x, float pos_y)
+BoardCoordinate GameUI::getSquare(float pos_x, float pos_y)
 {
     pos_x = (pos_x - board_pos_x) / square_size;
     pos_y = 8 - ((pos_y - board_pos_y) / square_size);
-    int new_pos_x = pos_x + 1;
     int new_pos_y = pos_y + 1;
-    return Square(static_cast<Square::column>(new_pos_x), new_pos_y);
+    switch ((int)pos_x) {
+    case 0:
+        return BoardCoordinate(BoardCoordinate::Column::A, new_pos_y);
+    case 1:
+        return BoardCoordinate(BoardCoordinate::Column::B, new_pos_y);
+    case 2:
+        return BoardCoordinate(BoardCoordinate::Column::C, new_pos_y);
+    case 3:
+        return BoardCoordinate(BoardCoordinate::Column::D, new_pos_y);
+    case 4:
+        return BoardCoordinate(BoardCoordinate::Column::E, new_pos_y);
+    case 5:
+        return BoardCoordinate(BoardCoordinate::Column::F, new_pos_y);
+    case 6:
+        return BoardCoordinate(BoardCoordinate::Column::G, new_pos_y);
+    case 7:
+        return BoardCoordinate(BoardCoordinate::Column::H, new_pos_y);
+    default:
+        throw std::out_of_range("Square is out of possible range");
+    }
 }
 
 GameUI::GameUI(GameState& new_game)

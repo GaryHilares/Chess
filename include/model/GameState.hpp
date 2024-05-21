@@ -1,5 +1,5 @@
 #pragma once
-#include "../Square.hpp"
+#include "BoardCoordinate.hpp"
 #include "Piece.hpp"
 #include <array>
 #include <optional>
@@ -12,7 +12,7 @@ public:
     std::array<Piece*, 64> board;
     Piece* pawn_double_moved_last_turn;
     GameState();
-    bool existInterrumptions(Square source, Square destiny) const;
+    bool existInterrumptions(BoardCoordinate source, BoardCoordinate destiny) const;
     Piece*& accessBoard(short int col, short int row);
     Piece* readBoard(short int col, short int row) const;
     PieceColor getTurnColor() const;
