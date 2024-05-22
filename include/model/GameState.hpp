@@ -6,6 +6,7 @@
 
 /// TODO: Disable castling when a player's king is in check.
 class GameState {
+private:
     PieceColor turn_color;
 
 public:
@@ -17,4 +18,5 @@ public:
     Piece* readBoard(short int col, short int row) const;
     PieceColor getTurnColor() const;
     void changeTurnColor();
+    bool isLegalMove(const Piece moving, const BoardCoordinate source, const BoardCoordinate destiny) const;
 };

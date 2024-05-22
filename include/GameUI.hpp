@@ -1,6 +1,7 @@
 #pragma once
 #include "model/GameState.hpp"
 #include <SFML/Graphics.hpp>
+#include <optional>
 
 class GameUI : public sf::Drawable {
 private:
@@ -11,9 +12,8 @@ private:
     std::array<sf::Sprite, 12> pieces_sprites;
     GameState& m_game;
     Piece* moving_piece;
-    BoardCoordinate* last_square;
+    std::optional<BoardCoordinate> last_square;
     sf::Texture pieces_texture;
-    bool isLegalMove(const Piece moving, const BoardCoordinate source, const BoardCoordinate destiny) const;
 
 public:
     GameUI(GameState& new_game);
