@@ -9,7 +9,7 @@ void GameUI::update(sf::RenderWindow& window)
     } else if (!sf::Mouse::isButtonPressed(sf::Mouse::Left) && this->last_square.has_value()) {
         // If piece is dropped, try to move it to current square.
         BoardCoordinate pressed_square = fromUiCoordsToBoardCoords(mousePos.x, mousePos.y);
-        Piece*& moving_piece = this->m_game.accessBoard(this->last_square.value().getCol(), this->last_square.value().getRow());
+        const Piece* moving_piece = this->m_game.readBoard(this->last_square.value().getCol(), this->last_square.value().getRow());
         if (m_game.isLegalMove(*moving_piece, this->last_square.value(), pressed_square)) {
             m_game.move(this->last_square.value(), pressed_square);
         }
@@ -44,8 +44,8 @@ void GameUI::draw(sf::RenderTarget& target, sf::RenderStates state) const
     {
         for (unsigned int i = 0; i < 8; i++) {
             for (unsigned int j = 0; j < 8; j++) {
-                if (this->m_game.board[i * 8 + j] != nullptr && this->m_game.board[i * 8 + j] != moving_piece) {
-                    const sf::Sprite& currentPieceSprite = this->pieces_sprites[(int)this->m_game.board[i * 8 + j]->getColor() * 6 + (int)this->m_game.board[i * 8 + j]->getType()];
+                if (this->m_game.readBoard(i, j) != nullptr && this->m_game.readBoard(i, j) != moving_piece) {
+                    const sf::Sprite& currentPieceSprite = this->pieces_sprites[(int)this->m_game.readBoard(i, j)->getColor() * 6 + (int)this->m_game.readBoard(i, j)->getType()];
                     sf::Transformable transformer;
                     sf::RenderStates specific_state = state;
                     transformer.setPosition(board_pos_x + i * square_size, board_pos_y + j * square_size);

@@ -8,16 +8,16 @@
 class GameState {
 private:
     PieceColor turn_color;
-
-public:
     std::array<Piece*, 64> board;
     Piece* pawn_double_moved_last_turn;
-    GameState();
-    bool existInterrumptions(BoardCoordinate source, BoardCoordinate destiny) const;
     Piece*& accessBoard(short int col, short int row);
+    bool existInterrumptions(BoardCoordinate source, BoardCoordinate destiny) const;
+    void changeTurnColor();
+
+public:
+    GameState();
     Piece* readBoard(short int col, short int row) const;
     PieceColor getTurnColor() const;
-    void changeTurnColor();
     bool isLegalMove(const Piece moving, const BoardCoordinate source, const BoardCoordinate destiny) const;
     void move(const BoardCoordinate source, const BoardCoordinate destiny);
 };
