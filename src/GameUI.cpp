@@ -3,45 +3,46 @@
 void GameUI::update(sf::RenderWindow& window)
 {
     sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-    if ((sf::Mouse::isButtonPressed(sf::Mouse::Left) && moving_piece == nullptr)) {
+    if ((sf::Mouse::isButtonPressed(sf::Mouse::Left) && !this->last_square.has_value())) {
         // If not grabbing piece, pick up piece if it has started moving
         this->last_square = getSquare(mousePos.x, mousePos.y);
-        std::swap(this->moving_piece, this->m_game.board[this->last_square.value().getCol() * 8 + this->last_square.value().getRow()]);
-    } else if ((!sf::Mouse::isButtonPressed(sf::Mouse::Left) && this->moving_piece != nullptr)) {
+    } else if (!sf::Mouse::isButtonPressed(sf::Mouse::Left) && this->last_square.has_value()) {
         // If piece is dropped, try to move it to current square.
         BoardCoordinate pressedSquare = getSquare(mousePos.x, mousePos.y);
-        if (m_game.isLegalMove(*this->moving_piece, this->last_square.value(), pressedSquare)) {
+        Piece*& moving_piece = this->m_game.accessBoard(this->last_square.value().getCol(), this->last_square.value().getRow());
+        if (m_game.isLegalMove(*moving_piece, this->last_square.value(), pressedSquare)) {
             // Move piece.
             this->m_game.pawn_double_moved_last_turn = nullptr;
-            this->moving_piece->setAsMoved();
-            if (this->moving_piece->getType() == PieceType::Pawn
+            moving_piece->setAsMoved();
+            if (moving_piece->getType() == PieceType::Pawn
                 && this->last_square.value().getCol() != pressedSquare.getCol()
-                && this->m_game.board[pressedSquare.getCol() * 8 + pressedSquare.getRow()] == nullptr) {
+                && this->m_game.readBoard(pressedSquare.getCol(), pressedSquare.getRow()) == nullptr) {
                 // Check if move is en passant, and if it is remove the pawn.
-                if (this->moving_piece->getColor() == PieceColor::White && this->m_game.board[pressedSquare.getCol() * 8 + pressedSquare.getRow() + 1] != nullptr) {
+                if (moving_piece->getColor() == PieceColor::White && this->m_game.board[pressedSquare.getCol() * 8 + pressedSquare.getRow() + 1] != nullptr) {
                     delete this->m_game.board[pressedSquare.getCol() * 8 + pressedSquare.getRow() + 1];
                     this->m_game.board[pressedSquare.getCol() * 8 + pressedSquare.getRow() + 1] = nullptr;
-                } else if (this->moving_piece->getColor() == PieceColor::Black && this->m_game.board[pressedSquare.getCol() * 8 + pressedSquare.getRow() - 1] != nullptr) {
+                } else if (moving_piece->getColor() == PieceColor::Black && this->m_game.board[pressedSquare.getCol() * 8 + pressedSquare.getRow() - 1] != nullptr) {
                     delete this->m_game.board[pressedSquare.getCol() * 8 + pressedSquare.getRow() - 1];
                     this->m_game.board[pressedSquare.getCol() * 8 + pressedSquare.getRow() - 1] = nullptr;
                 }
             }
             if (this->m_game.board[pressedSquare.getCol() * 8 + pressedSquare.getRow()] != nullptr)
-                // Check if move is a capture, and if it is, do it.
+                // Check if move is a capture, and if it is, remove the targetted piece.
                 delete this->m_game.board[pressedSquare.getCol() * 8 + pressedSquare.getRow()];
-            if (this->moving_piece->getType() == PieceType::King
+            if (moving_piece->getType() == PieceType::King
                 && this->last_square.value().getCol() == BoardCoordinate::columnToInt(BoardCoordinate::Column::E)
                 && pressedSquare.getCol() == BoardCoordinate::columnToInt(BoardCoordinate::Column::C)) {
                 // Check if move is long castling, and if it is, move the rook.
                 this->m_game.board[BoardCoordinate::columnToInt(BoardCoordinate::Column::A) * 8 + this->last_square.value().getRow()]->setAsMoved();
                 std::swap(this->m_game.board[BoardCoordinate::columnToInt(BoardCoordinate::Column::A) * 8 + this->last_square.value().getRow()], this->m_game.board[BoardCoordinate::columnToInt(BoardCoordinate::Column::D) * 8 + this->last_square.value().getRow()]);
-            } else if (this->moving_piece->getType() == PieceType::King
+            } else if (moving_piece->getType() == PieceType::King
                 && this->last_square.value().getCol() == BoardCoordinate::columnToInt(BoardCoordinate::Column::E)
                 && pressedSquare.getCol() == BoardCoordinate::columnToInt(BoardCoordinate::Column::G)) {
                 // Check if move is short castling, and if it is, move the rook.
                 this->m_game.board[BoardCoordinate::columnToInt(BoardCoordinate::Column::H) * 8 + this->last_square.value().getRow()]->setAsMoved();
                 std::swap(this->m_game.board[BoardCoordinate::columnToInt(BoardCoordinate::Column::H) * 8 + this->last_square.value().getRow()], this->m_game.board[BoardCoordinate::columnToInt(BoardCoordinate::Column::F) * 8 + this->last_square.value().getRow()]);
-            } else if (this->moving_piece->getType() == PieceType::Pawn && pressedSquare.getRow() == BoardCoordinate::rowToInt(this->moving_piece->getColor() == PieceColor::White ? 8 : 1)) {
+            } else if (moving_piece->getType() == PieceType::Pawn
+                && pressedSquare.getRow() == BoardCoordinate::rowToInt(moving_piece->getColor() == PieceColor::White ? 8 : 1)) {
                 // Check if move is promotion, and if it is, display promotion menu.
                 PieceType toPromote;
                 while (true) {
@@ -89,24 +90,23 @@ void GameUI::update(sf::RenderWindow& window)
                         }
                     }
                 }
-                this->moving_piece->promotePawnTo(toPromote);
-            } else if (this->moving_piece->getType() == PieceType::Pawn
+                moving_piece->promotePawnTo(toPromote);
+            } else if (moving_piece->getType() == PieceType::Pawn
                 && abs(this->last_square.value().getRow() - pressedSquare.getRow()) == 2) {
                 // If pawn double moved, store moved pawn.
-                this->m_game.pawn_double_moved_last_turn = this->moving_piece;
+                this->m_game.pawn_double_moved_last_turn = moving_piece;
             }
             // Move piece
-            this->m_game.board[pressedSquare.getCol() * 8 + pressedSquare.getRow()] = this->moving_piece;
+            this->m_game.board[pressedSquare.getCol() * 8 + pressedSquare.getRow()] = moving_piece;
 
             // Remove moving state
-            this->moving_piece = nullptr;
+            moving_piece = nullptr;
             this->last_square.reset();
 
             // Change turn color
             m_game.changeTurnColor();
         } else {
             // If move is illegal, do not perform it.
-            std::swap(this->moving_piece, this->m_game.board[this->last_square.value().getCol() * 8 + this->last_square.value().getRow()]);
             this->last_square.reset();
         }
     }
@@ -114,6 +114,10 @@ void GameUI::update(sf::RenderWindow& window)
 
 void GameUI::draw(sf::RenderTarget& target, sf::RenderStates state) const
 {
+    Piece* moving_piece = nullptr;
+    if (last_square.has_value()) {
+        moving_piece = this->m_game.readBoard(this->last_square.value().getCol(), this->last_square.value().getRow());
+    }
     {
         bool rectangle_is_white = false;
         sf::RectangleShape shape(sf::Vector2f(square_size, square_size));
@@ -135,7 +139,7 @@ void GameUI::draw(sf::RenderTarget& target, sf::RenderStates state) const
     {
         for (unsigned int i = 0; i < 8; i++) {
             for (unsigned int j = 0; j < 8; j++) {
-                if (this->m_game.board[i * 8 + j] != nullptr) {
+                if (this->m_game.board[i * 8 + j] != nullptr && this->m_game.board[i * 8 + j] != moving_piece) {
                     const sf::Sprite& currentPieceSprite = this->pieces_sprites[(int)this->m_game.board[i * 8 + j]->getColor() * 6 + (int)this->m_game.board[i * 8 + j]->getType()];
                     sf::Transformable transformer;
                     sf::RenderStates specific_state = state;
@@ -145,10 +149,10 @@ void GameUI::draw(sf::RenderTarget& target, sf::RenderStates state) const
                 }
             }
         }
-        if (this->moving_piece != nullptr) {
+        if (moving_piece != nullptr) {
             sf::Window* window = dynamic_cast<sf::Window*>(&target);
             if (window != nullptr) {
-                const sf::Sprite& currentPieceSprite = this->pieces_sprites[(int)this->moving_piece->getColor() * 6 + (int)this->moving_piece->getType()];
+                const sf::Sprite& currentPieceSprite = this->pieces_sprites[(int)moving_piece->getColor() * 6 + (int)moving_piece->getType()];
                 sf::Transformable transformer;
                 sf::RenderStates specific_state;
                 sf::Vector2f mousePos = target.mapPixelToCoords(sf::Mouse::getPosition(*window));
@@ -158,13 +162,6 @@ void GameUI::draw(sf::RenderTarget& target, sf::RenderStates state) const
                 target.draw(currentPieceSprite, specific_state);
             }
         }
-    }
-}
-
-GameUI::~GameUI()
-{
-    if (this->moving_piece != nullptr) {
-        delete moving_piece;
     }
 }
 
@@ -197,7 +194,6 @@ BoardCoordinate GameUI::getSquare(float pos_x, float pos_y)
 
 GameUI::GameUI(GameState& new_game)
     : m_game(new_game)
-    , moving_piece(nullptr)
     , last_square(std::nullopt)
 {
     if (!this->pieces_texture.loadFromFile("ChessPieces.png"))

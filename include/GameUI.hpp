@@ -11,13 +11,11 @@ private:
     static constexpr int piece_size_in_texture = 200;
     std::array<sf::Sprite, 12> pieces_sprites;
     GameState& m_game;
-    Piece* moving_piece;
     std::optional<BoardCoordinate> last_square;
     sf::Texture pieces_texture;
 
 public:
     GameUI(GameState& new_game);
-    ~GameUI();
     virtual void draw(sf::RenderTarget& target, sf::RenderStates state) const;
     BoardCoordinate getSquare(float pos_x, float pos_y);
     void update(sf::RenderWindow& window);
