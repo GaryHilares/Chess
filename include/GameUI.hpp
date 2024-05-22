@@ -17,6 +17,6 @@ private:
 public:
     GameUI(GameState& new_game);
     virtual void draw(sf::RenderTarget& target, sf::RenderStates state) const;
-    BoardCoordinate getSquare(float pos_x, float pos_y);
+    BoardCoordinate fromUiCoordsToBoardCoords(float pos_x, float pos_y);
     void update(sf::RenderWindow& window);
 };

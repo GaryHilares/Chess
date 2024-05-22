@@ -5,18 +5,15 @@ void GameUI::update(sf::RenderWindow& window)
     sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
     if ((sf::Mouse::isButtonPressed(sf::Mouse::Left) && !this->last_square.has_value())) {
         // If not grabbing piece, pick up piece if it has started moving
-        this->last_square = getSquare(mousePos.x, mousePos.y);
+        this->last_square = fromUiCoordsToBoardCoords(mousePos.x, mousePos.y);
     } else if (!sf::Mouse::isButtonPressed(sf::Mouse::Left) && this->last_square.has_value()) {
         // If piece is dropped, try to move it to current square.
-        BoardCoordinate pressedSquare = getSquare(mousePos.x, mousePos.y);
+        BoardCoordinate pressed_square = fromUiCoordsToBoardCoords(mousePos.x, mousePos.y);
         Piece*& moving_piece = this->m_game.accessBoard(this->last_square.value().getCol(), this->last_square.value().getRow());
-        if (m_game.isLegalMove(*moving_piece, this->last_square.value(), pressedSquare)) {
-            m_game.move(this->last_square.value(), pressedSquare);
-            this->last_square.reset();
-        } else {
-            // If move is illegal, do not perform it.
-            this->last_square.reset();
+        if (m_game.isLegalMove(*moving_piece, this->last_square.value(), pressed_square)) {
+            m_game.move(this->last_square.value(), pressed_square);
         }
+        this->last_square.reset();
     }
 }
 
@@ -73,7 +70,7 @@ void GameUI::draw(sf::RenderTarget& target, sf::RenderStates state) const
     }
 }
 
-BoardCoordinate GameUI::getSquare(float pos_x, float pos_y)
+BoardCoordinate GameUI::fromUiCoordsToBoardCoords(float pos_x, float pos_y)
 {
     pos_x = (pos_x - board_pos_x) / square_size;
     pos_y = 8 - ((pos_y - board_pos_y) / square_size);
