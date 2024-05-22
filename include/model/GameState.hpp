@@ -19,4 +19,5 @@ public:
     PieceColor getTurnColor() const;
     void changeTurnColor();
     bool isLegalMove(const Piece moving, const BoardCoordinate source, const BoardCoordinate destiny) const;
+    void move(const BoardCoordinate source, const BoardCoordinate destiny);
 };

@@ -190,3 +190,102 @@ bool GameState::isLegalMove(const Piece moving, const BoardCoordinate source, co
         return false;
     }
 }
+
+void GameState::move(const BoardCoordinate source, const BoardCoordinate destiny)
+{
+    Piece*& moving_piece = accessBoard(source.getCol(), destiny.getRow());
+
+    // Move piece.
+    pawn_double_moved_last_turn = nullptr;
+    moving_piece->setAsMoved();
+    if (moving_piece->getType() == PieceType::Pawn
+        && source.getCol() != destiny.getCol()
+        && readBoard(destiny.getCol(), destiny.getRow()) == nullptr) {
+        // Check if move is en passant, and if it is remove the pawn.
+        if (moving_piece->getColor() == PieceColor::White && this->board[destiny.getCol() * 8 + destiny.getRow() + 1] != nullptr) {
+            delete this->board[destiny.getCol() * 8 + destiny.getRow() + 1];
+            this->board[destiny.getCol() * 8 + destiny.getRow() + 1] = nullptr;
+        } else if (moving_piece->getColor() == PieceColor::Black && this->board[destiny.getCol() * 8 + destiny.getRow() - 1] != nullptr) {
+            delete this->board[destiny.getCol() * 8 + destiny.getRow() - 1];
+            this->board[destiny.getCol() * 8 + destiny.getRow() - 1] = nullptr;
+        }
+    }
+    if (this->board[destiny.getCol() * 8 + destiny.getRow()] != nullptr)
+        // Check if move is a capture, and if it is, remove the targetted piece.
+        delete this->board[destiny.getCol() * 8 + destiny.getRow()];
+    if (moving_piece->getType() == PieceType::King
+        && source.getCol() == BoardCoordinate::columnToInt(BoardCoordinate::Column::E)
+        && destiny.getCol() == BoardCoordinate::columnToInt(BoardCoordinate::Column::C)) {
+        // Check if move is long castling, and if it is, move the rook.
+        this->board[BoardCoordinate::columnToInt(BoardCoordinate::Column::A) * 8 + source.getRow()]->setAsMoved();
+        std::swap(this->board[BoardCoordinate::columnToInt(BoardCoordinate::Column::A) * 8 + source.getRow()], this->board[BoardCoordinate::columnToInt(BoardCoordinate::Column::D) * 8 + source.getRow()]);
+    } else if (moving_piece->getType() == PieceType::King
+        && source.getCol() == BoardCoordinate::columnToInt(BoardCoordinate::Column::E)
+        && destiny.getCol() == BoardCoordinate::columnToInt(BoardCoordinate::Column::G)) {
+        // Check if move is short castling, and if it is, move the rook.
+        this->board[BoardCoordinate::columnToInt(BoardCoordinate::Column::H) * 8 + source.getRow()]->setAsMoved();
+        std::swap(this->board[BoardCoordinate::columnToInt(BoardCoordinate::Column::H) * 8 + source.getRow()], this->board[BoardCoordinate::columnToInt(BoardCoordinate::Column::F) * 8 + source.getRow()]);
+    } else if (moving_piece->getType() == PieceType::Pawn
+        && destiny.getRow() == BoardCoordinate::rowToInt(moving_piece->getColor() == PieceColor::White ? 8 : 1)) {
+        // Check if move is promotion, and if it is, display promotion menu.
+        /*PieceType toPromote;
+        while (true) {
+            sf::Event event;
+            if (window.pollEvent(event)) {
+                switch (event.type) {
+                case sf::Event::Closed:
+                    window.close();
+                    exit(0);
+                default:
+                    break;
+                }
+            }
+            window.clear(moving_piece->getColor() == PieceColor::White ? sf::Color::White : sf::Color(100, 100, 100));
+            sf::Transformable transformer;
+            sf::RenderStates specificState;
+            transformer.setPosition(100, 350);
+            for (PieceType i : { PieceType::Queen, PieceType::Rook, PieceType::Bishop, PieceType::Knight }) {
+                transformer.move(100, 0);
+                specificState.transform = transformer.getTransform();
+                window.draw(this->pieces_sprites[static_cast<int>(moving_piece->getColor()) * 6 + static_cast<int>(i)], specificState);
+            }
+            window.display();
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+                sf::Vector2f newMousePosF = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+                sf::Vector2i newMousePos(newMousePosF.x, newMousePosF.y);
+                if (newMousePos.y >= 350 && newMousePos.y <= 450 && newMousePos.x >= 200 && newMousePos.x <= 600) {
+                    switch ((newMousePos.x - 200) / 100) {
+                    case 0:
+                        toPromote = PieceType::Queen;
+                        break;
+                    case 1:
+                        toPromote = PieceType::Rook;
+                        break;
+                    case 2:
+                        toPromote = PieceType::Bishop;
+                        break;
+                    case 3:
+                        toPromote = PieceType::Knight;
+                        break;
+                    case 4:
+                        throw std::out_of_range("Out of promotable Pieces");
+                    }
+                    break;
+                }
+            }
+        }
+        moving_piece->promotePawnTo(toPromote);*/
+    } else if (moving_piece->getType() == PieceType::Pawn
+        && abs(source.getRow() - destiny.getRow()) == 2) {
+        // If pawn double moved, store moved pawn.
+        this->pawn_double_moved_last_turn = moving_piece;
+    }
+    // Move piece
+    this->board[destiny.getCol() * 8 + destiny.getRow()] = moving_piece;
+
+    // Remove moving state
+    moving_piece = nullptr;
+
+    // Change turn color
+    changeTurnColor();
+}
