@@ -9,8 +9,7 @@ void GameUI::update(sf::RenderWindow& window)
     } else if (!sf::Mouse::isButtonPressed(sf::Mouse::Left) && this->last_square.has_value()) {
         // If piece is dropped, try to move it to current square.
         BoardCoordinate pressed_square = fromUiCoordsToBoardCoords(mousePos.x, mousePos.y);
-        const Piece* moving_piece = this->m_game.readBoard(this->last_square.value().getCol(), this->last_square.value().getRow());
-        if (m_game.isLegalMove(*moving_piece, this->last_square.value(), pressed_square)) {
+        if (m_game.isLegalMove(this->last_square.value(), pressed_square)) {
             m_game.move(this->last_square.value(), pressed_square);
         }
         this->last_square.reset();

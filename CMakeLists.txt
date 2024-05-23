@@ -29,11 +29,12 @@ else()
 endif()
 
 set(CPPSources
-    "src/model/GameState.cpp"
-    "src/GameUI.cpp"
     "src/main.cpp"
+    "src/model/GameState.cpp"
     "src/model/Piece.cpp"
     "src/model/BoardCoordinate.cpp"
+    "src/controller/GameController.cpp"
+    "src/GameUI.cpp"
     )
 
 
