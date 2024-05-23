@@ -129,12 +129,15 @@ bool GameState::isLegalMove(const BoardCoordinate source, const BoardCoordinate 
     // Check that opposing rooks, bishops and queens will not keep making check after movement.
     for (std::pair<short int, short int> modifiers : std::initializer_list<std::pair<short int, short int>> { { -1, -1 }, { 1, -1 }, { -1, 1 }, { 1, 1 }, { 0, 1 }, { 0, -1 }, { 1, 0 }, { -1, 0 } }) {
         for (int x = king_position.getCol() + modifiers.first, y = king_position.getRow() + modifiers.second; x < 8 && x >= 0 && y < 8 && y >= 0; x += modifiers.first, y += modifiers.second) {
-            if (readBoard(x, y).has_value()) {
-                if (readBoard(x, y)->getColor() == opposing_color
+            std::optional<Piece> piece_at_offset = readBoard(x, y);
+            if (piece_at_offset.has_value()) {
+                if (piece_at_offset.value().getColor() == opposing_color
                     && !(destiny.getCol() == x && destiny.getRow() == y)
                     && (readBoard(x, y)->getType() == PieceType::Queen
-                        || ((abs(modifiers.first) != abs(modifiers.second) && readBoard(x, y)->getType() == PieceType::Rook)
-                            || (abs(modifiers.first) == abs(modifiers.second) && readBoard(x, y)->getType() == PieceType::Bishop)))) {
+                        || ((abs(modifiers.first) != abs(modifiers.second)
+                                && piece_at_offset.value().getType() == PieceType::Rook)
+                            || (abs(modifiers.first) == abs(modifiers.second)
+                                && piece_at_offset.value().getType() == PieceType::Bishop)))) {
                     return false;
                 } else {
                     break;
