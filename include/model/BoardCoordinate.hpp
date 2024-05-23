@@ -15,14 +15,14 @@ public:
     };
 
 private:
-    Column col;
-    short int row;
+    Column m_column;
+    short int m_row;
 
 public:
+    BoardCoordinate(Column column, unsigned short int row);
     short int getCol() const;
     short int getRow() const;
-    static int columnToInt(Column colCode);
-    static int rowToInt(short int rowCode);
-    BoardCoordinate(Column _col, unsigned short int _row);
-    bool operator==(const BoardCoordinate other) const;
+    static int columnToInt(Column column_code);
+    static int rowToInt(short int row_code);
+    bool operator==(const BoardCoordinate& other) const;
 };

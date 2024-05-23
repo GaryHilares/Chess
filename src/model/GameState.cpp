@@ -3,37 +3,24 @@
 
 GameState::GameState()
     : m_turn_color(PieceColor::White)
-    , m_board({ Piece(PieceColor::Black, PieceType::Rook), Piece(PieceColor::Black, PieceType::Pawn), std::nullopt, std::nullopt, std::nullopt, std::nullopt, Piece(PieceColor::White, PieceType::Pawn), Piece(PieceColor::White, PieceType::Rook),
-          Piece(PieceColor::Black, PieceType::Knight), Piece(PieceColor::Black, PieceType::Pawn), std::nullopt, std::nullopt, std::nullopt, std::nullopt, Piece(PieceColor::White, PieceType::Pawn), Piece(PieceColor::White, PieceType::Knight),
-          Piece(PieceColor::Black, PieceType::Bishop), Piece(PieceColor::Black, PieceType::Pawn), std::nullopt, std::nullopt, std::nullopt, std::nullopt, Piece(PieceColor::White, PieceType::Pawn), Piece(PieceColor::White, PieceType::Bishop),
-          Piece(PieceColor::Black, PieceType::Queen), Piece(PieceColor::Black, PieceType::Pawn), std::nullopt, std::nullopt, std::nullopt, std::nullopt, Piece(PieceColor::White, PieceType::Pawn), Piece(PieceColor::White, PieceType::Queen),
-          Piece(PieceColor::Black, PieceType::King), Piece(PieceColor::Black, PieceType::Pawn), std::nullopt, std::nullopt, std::nullopt, std::nullopt, Piece(PieceColor::White, PieceType::Pawn), Piece(PieceColor::White, PieceType::King),
-          Piece(PieceColor::Black, PieceType::Bishop), Piece(PieceColor::Black, PieceType::Pawn), std::nullopt, std::nullopt, std::nullopt, std::nullopt, Piece(PieceColor::White, PieceType::Pawn), Piece(PieceColor::White, PieceType::Bishop),
-          Piece(PieceColor::Black, PieceType::Knight), Piece(PieceColor::Black, PieceType::Pawn), std::nullopt, std::nullopt, std::nullopt, std::nullopt, Piece(PieceColor::White, PieceType::Pawn), Piece(PieceColor::White, PieceType::Knight),
-          Piece(PieceColor::Black, PieceType::Rook), Piece(PieceColor::Black, PieceType::Pawn), std::nullopt, std::nullopt, std::nullopt, std::nullopt, Piece(PieceColor::White, PieceType::Pawn), Piece(PieceColor::White, PieceType::Rook) })
+    , m_board()
     , pawn_double_moved_last_turn(std::nullopt)
 {
 }
 
 std::optional<Piece>& GameState::accessBoard(short int col, short int row)
 {
-    if (col > 7 || col < 0 || row > 7 || row < 0) {
-        throw std::out_of_range("Out of board's range.");
-    }
-    return m_board[col * 8 + row];
+    return m_board.accessBoard(col, row);
 }
 
 std::optional<Piece> GameState::readBoard(BoardCoordinate pos) const
 {
-    return readBoard(pos.getCol(), pos.getRow());
+    return m_board.readBoard(pos);
 }
 
 std::optional<Piece> GameState::readBoard(short int col, short int row) const
 {
-    if (col > 7 || col < 0 || row > 7 || row < 0) {
-        return std::nullopt;
-    }
-    return m_board[col * 8 + row];
+    return m_board.readBoard(col, row);
 }
 
 bool GameState::existInterrumptions(BoardCoordinate source, BoardCoordinate destiny) const
@@ -164,15 +151,15 @@ bool GameState::isLegalMove(const BoardCoordinate source, const BoardCoordinate 
             return false;
         }
         if (destiny.getCol() == BoardCoordinate::columnToInt(BoardCoordinate::Column::G)
-            && m_board[BoardCoordinate::columnToInt(BoardCoordinate::Column::H) * 8 + source.getRow()].has_value() && !m_board[BoardCoordinate::columnToInt(BoardCoordinate::Column::H) * 8 + source.getRow()]->hasMoved()
+            && readBoard(BoardCoordinate::columnToInt(BoardCoordinate::Column::H), source.getRow()).has_value() && !readBoard(BoardCoordinate::columnToInt(BoardCoordinate::Column::H), source.getRow())->hasMoved()
             && movedY == 0
             && !moving_piece.hasMoved()
             && isLegalMove(source, BoardCoordinate(BoardCoordinate::Column::F, moving_piece.getColor() == PieceColor::White ? 1 : 8))) {
             return true;
         }
         if (destiny.getCol() == BoardCoordinate::columnToInt(BoardCoordinate::Column::C)
-            && m_board[BoardCoordinate::columnToInt(BoardCoordinate::Column::A) * 8 + source.getRow()].has_value()
-            && !m_board[BoardCoordinate::columnToInt(BoardCoordinate::Column::A) * 8 + source.getRow()]->hasMoved()
+            && readBoard(BoardCoordinate::columnToInt(BoardCoordinate::Column::A), source.getRow()).has_value()
+            && !readBoard(BoardCoordinate::columnToInt(BoardCoordinate::Column::A), source.getRow()).value().hasMoved()
             && movedY == 0
             && !moving_piece.hasMoved()
             && isLegalMove(source, BoardCoordinate(BoardCoordinate::Column::D, moving_piece.getColor() == PieceColor::White ? 1 : 8))) {
@@ -216,21 +203,21 @@ bool GameState::isLegalMove(const BoardCoordinate source, const BoardCoordinate 
             return false;
         }
         if (((moving_piece.getColor() == PieceColor::White && source.getRow() == BoardCoordinate::rowToInt(2)) || (moving_piece.getColor() == PieceColor::Black && source.getRow() == BoardCoordinate::rowToInt(7)))
-            && movedX == 0 && movedY == 2 && !this->m_board[destiny.getCol() * 8 + destiny.getRow()].has_value()) {
+            && movedX == 0 && movedY == 2 && !readBoard(destiny.getCol(), destiny.getRow()).has_value()) {
             return true;
         } else if (movedX == 1
             && movedY == 1
-            && (this->m_board[destiny.getCol() * 8 + destiny.getRow()].has_value()
+            && (readBoard(destiny.getCol(), destiny.getRow()).has_value()
                 || (source.getRow() == BoardCoordinate::rowToInt(5)
                     && moving_piece.getColor() == PieceColor::White
-                    && this->m_board[destiny.getCol() * 8 + destiny.getRow() + 1].has_value()
-                    && this->m_board[destiny.getCol() * 8 + destiny.getRow() + 1]->getType() == PieceType::Pawn
-                    && this->m_board[destiny.getCol() * 8 + destiny.getRow() + 1] == this->pawn_double_moved_last_turn)
+                    && readBoard(destiny.getCol(), destiny.getRow() + 1).has_value()
+                    && readBoard(destiny.getCol(), destiny.getRow() + 1)->getType() == PieceType::Pawn
+                    && readBoard(destiny.getCol(), destiny.getRow() + 1) == this->pawn_double_moved_last_turn)
                 || (source.getRow() == BoardCoordinate::rowToInt(4)
                     && moving_piece.getColor() == PieceColor::Black
-                    && this->m_board[destiny.getCol() * 8 + destiny.getRow() - 1].has_value()
-                    && this->m_board[destiny.getCol() * 8 + destiny.getRow() - 1]->getType() == PieceType::Pawn
-                    && this->m_board[destiny.getCol() * 8 + destiny.getRow() - 1] == this->pawn_double_moved_last_turn))) {
+                    && readBoard(destiny.getCol(), destiny.getRow() - 1).has_value()
+                    && readBoard(destiny.getCol(), destiny.getRow() - 1)->getType() == PieceType::Pawn
+                    && readBoard(destiny.getCol(), destiny.getRow() - 1) == this->pawn_double_moved_last_turn))) {
             return true;
         } else if (movedX != 0 || movedY != 1)
             return false;
@@ -267,14 +254,14 @@ void GameState::move(const BoardCoordinate source, const BoardCoordinate destiny
         && destiny.getCol() == BoardCoordinate::columnToInt(BoardCoordinate::Column::C)) {
         // Check if move is long castling, and if it is, move the rook.
         accessBoard(BoardCoordinate::columnToInt(BoardCoordinate::Column::A), source.getRow())->setAsMoved();
-        std::swap(this->m_board[BoardCoordinate::columnToInt(BoardCoordinate::Column::A) * 8 + source.getRow()],
-            this->m_board[BoardCoordinate::columnToInt(BoardCoordinate::Column::D) * 8 + source.getRow()]);
+        std::swap(accessBoard(BoardCoordinate::columnToInt(BoardCoordinate::Column::A), source.getRow()),
+            accessBoard(BoardCoordinate::columnToInt(BoardCoordinate::Column::D), source.getRow()));
     } else if (moving_piece->getType() == PieceType::King
         && source.getCol() == BoardCoordinate::columnToInt(BoardCoordinate::Column::E)
         && destiny.getCol() == BoardCoordinate::columnToInt(BoardCoordinate::Column::G)) {
         // Check if move is short castling, and if it is, move the rook.
         this->accessBoard(BoardCoordinate::columnToInt(BoardCoordinate::Column::H), source.getRow())->setAsMoved();
-        std::swap(this->m_board[BoardCoordinate::columnToInt(BoardCoordinate::Column::H) * 8 + source.getRow()], this->m_board[BoardCoordinate::columnToInt(BoardCoordinate::Column::F) * 8 + source.getRow()]);
+        std::swap(accessBoard(BoardCoordinate::columnToInt(BoardCoordinate::Column::H), source.getRow()), accessBoard(BoardCoordinate::columnToInt(BoardCoordinate::Column::F), source.getRow()));
     } else if (moving_piece->getType() == PieceType::Pawn
         && destiny.getRow() == BoardCoordinate::rowToInt(moving_piece->getColor() == PieceColor::White ? 8 : 1)) {
         // Check if move is promotion, and if it is, display promotion menu.
@@ -297,7 +284,7 @@ void GameState::move(const BoardCoordinate source, const BoardCoordinate destiny
             for (PieceType i : { PieceType::Queen, PieceType::Rook, PieceType::Bishop, PieceType::Knight }) {
                 transformer.move(100, 0);
                 specificState.transform = transformer.getTransform();
-                window.draw(this->pieces_sprites[static_cast<int>(moving_piece->getColor()) * 6 + static_cast<int>(i)], specificState);
+                window.draw(this->pieces_sprites[static_cast<int>(moving_piece->getColor()) * 6 + static_cast<int>(i)), specificState);
             }
             window.display();
             if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {

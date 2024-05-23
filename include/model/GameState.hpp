@@ -1,4 +1,5 @@
 #pragma once
+#include "Board.hpp"
 #include "BoardCoordinate.hpp"
 #include "Piece.hpp"
 #include <array>
@@ -8,7 +9,7 @@
 class GameState {
 private:
     PieceColor m_turn_color;
-    std::array<std::optional<Piece>, 64> m_board;
+    Board m_board;
     std::optional<Piece> pawn_double_moved_last_turn;
     std::optional<Piece>& accessBoard(short int col, short int row);
     bool existInterrumptions(BoardCoordinate source, BoardCoordinate destiny) const;

@@ -33,6 +33,7 @@ set(CPPSources
     "src/model/GameState.cpp"
     "src/model/Piece.cpp"
     "src/model/BoardCoordinate.cpp"
+    "src/model/Board.cpp"
     "src/controller/GameController.cpp"
     "src/GameUI.cpp"
     )
