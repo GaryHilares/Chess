@@ -23,6 +23,11 @@ std::optional<Piece>& GameState::accessBoard(short int col, short int row)
     return m_board[col * 8 + row];
 }
 
+std::optional<Piece> GameState::readBoard(BoardCoordinate pos) const
+{
+    return readBoard(pos.getCol(), pos.getRow());
+}
+
 std::optional<Piece> GameState::readBoard(short int col, short int row) const
 {
     if (col > 7 || col < 0 || row > 7 || row < 0) {
@@ -63,9 +68,9 @@ bool GameState::existInterrumptions(BoardCoordinate source, BoardCoordinate dest
     }
 }
 
-PieceColor GameState::getTurnColor() const
+bool GameState::belongsToCurrentPlayer(const Piece& piece) const
 {
-    return m_turn_color;
+    return piece.getColor() == m_turn_color;
 }
 
 void GameState::changeTurnColor()
@@ -73,52 +78,59 @@ void GameState::changeTurnColor()
     m_turn_color = m_turn_color == PieceColor::White ? PieceColor::Black : PieceColor::White;
 }
 
+BoardCoordinate GameState::findKingPosition(PieceColor color) const
+{
+    for (short int i = 1; i <= 8; i++) {
+        for (short int j = 1; j <= 8; j++) {
+            BoardCoordinate cur(static_cast<BoardCoordinate::Column>(i), j);
+            std::optional<Piece> piece_at_cur = readBoard(cur);
+            if (piece_at_cur.has_value()
+                && piece_at_cur.value().getType() == PieceType::King
+                && piece_at_cur.value().getColor() == color) {
+                return cur;
+            }
+        }
+    }
+    throw std::runtime_error("No king of given color found");
+}
+
 bool GameState::isLegalMove(const BoardCoordinate source, const BoardCoordinate destiny) const
 {
-    const Piece moving = *this->readBoard(source.getCol(), source.getRow());
+    const Piece moving_piece = *this->readBoard(source.getCol(), source.getRow());
     // Check that moved piece belongs to current player.
-    if (moving.getColor() != getTurnColor()) {
+    if (!belongsToCurrentPlayer(moving_piece)) {
         return false;
     }
 
     // Check that destiny square does not have a piece belonging to the current player
-    if (source == destiny
-        || (readBoard(destiny.getCol(), destiny.getRow()).has_value()
-            && moving.getColor() == readBoard(destiny.getCol(), destiny.getRow())->getColor())) {
+    if (readBoard(destiny).has_value()
+        && belongsToCurrentPlayer(readBoard(destiny).value())) {
         return false;
     }
 
     // Get delta X, delta Y, the position of the current player's king, and the opposing color.
     const short int movedX = abs(source.getCol() - destiny.getCol());
     const short int movedY = abs(source.getRow() - destiny.getRow());
-    const BoardCoordinate kingPosition = [&]() {
-        for (short int i = 1; i <= 8; i++) {
-            for (short int j = 1; j <= 8; j++) {
-                BoardCoordinate cur(static_cast<BoardCoordinate::Column>(i), j);
-                if (readBoard(cur.getCol(), cur.getRow()).has_value()
-                    && readBoard(cur.getCol(), cur.getRow())->getType() == PieceType::King
-                    && readBoard(cur.getCol(), cur.getRow())->getColor() == moving.getColor()) {
-                    return cur;
-                }
-            }
-        }
-        return destiny;
-    }();
-    const PieceColor oposingColor = moving.getColor() == PieceColor::Black ? PieceColor::White : PieceColor::Black;
+    const BoardCoordinate king_position = findKingPosition(m_turn_color);
+    const PieceColor opposing_color = m_turn_color == PieceColor::Black ? PieceColor::White : PieceColor::Black;
 
     // Check that opposing knights will not keep making check after movement.
     for (std::pair<short int, short int> knightPlaces : std::initializer_list<std::pair<short int, short int>> { { -2, -1 }, { -1, -2 }, { -1, 2 }, { 2, -1 }, { 1, 2 }, { 2, 1 }, { 1, -2 }, { -2, 1 } }) {
-        if (readBoard(kingPosition.getCol() + knightPlaces.first, kingPosition.getRow() + knightPlaces.second).has_value()
-            && readBoard(kingPosition.getCol() + knightPlaces.first, kingPosition.getRow() + knightPlaces.second)->getType() == PieceType::Knight && readBoard((kingPosition.getCol() + knightPlaces.first), kingPosition.getRow() + knightPlaces.second)->getColor() == oposingColor && !(destiny.getCol() == kingPosition.getCol() + knightPlaces.first && destiny.getRow() == kingPosition.getRow() + knightPlaces.second)) {
+        const std::optional<Piece> piece_at_offset = readBoard(king_position.getCol() + knightPlaces.first, king_position.getRow() + knightPlaces.second);
+        if (!(destiny.getCol() == king_position.getCol() + knightPlaces.first
+                && destiny.getRow() == king_position.getRow() + knightPlaces.second)
+            && piece_at_offset.has_value()
+            && piece_at_offset.value().getType() == PieceType::Knight
+            && piece_at_offset.value().getColor() == opposing_color) {
             return false;
         }
     }
 
     // Check that opposing rooks, bishops and queens will not keep making check after movement.
     for (std::pair<short int, short int> modifiers : std::initializer_list<std::pair<short int, short int>> { { -1, -1 }, { 1, -1 }, { -1, 1 }, { 1, 1 }, { 0, 1 }, { 0, -1 }, { 1, 0 }, { -1, 0 } }) {
-        for (int x = kingPosition.getCol() + modifiers.first, y = kingPosition.getRow() + modifiers.second; x < 8 && x >= 0 && y < 8 && y >= 0; x += modifiers.first, y += modifiers.second) {
+        for (int x = king_position.getCol() + modifiers.first, y = king_position.getRow() + modifiers.second; x < 8 && x >= 0 && y < 8 && y >= 0; x += modifiers.first, y += modifiers.second) {
             if (readBoard(x, y).has_value()) {
-                if (readBoard(x, y)->getColor() == oposingColor
+                if (readBoard(x, y)->getColor() == opposing_color
                     && !(destiny.getCol() == x && destiny.getRow() == y)
                     && (readBoard(x, y)->getType() == PieceType::Queen
                         || ((abs(modifiers.first) != abs(modifiers.second) && readBoard(x, y)->getType() == PieceType::Rook)
@@ -135,15 +147,15 @@ bool GameState::isLegalMove(const BoardCoordinate source, const BoardCoordinate 
 
     // Check that opposing pawns will not keep making check after movement.
     for (int i : { -1, 1 }) {
-        if (readBoard(kingPosition.getCol() + i, kingPosition.getRow() + (oposingColor == PieceColor::White ? 1 : -1)).has_value()
-            && readBoard(kingPosition.getCol() + i, kingPosition.getRow() + (oposingColor == PieceColor::White ? 1 : -1))->getColor() == oposingColor
-            && readBoard(kingPosition.getCol() + i, kingPosition.getRow() + (oposingColor == PieceColor::White ? 1 : -1))->getType() == PieceType::Pawn) {
+        if (readBoard(king_position.getCol() + i, king_position.getRow() + (opposing_color == PieceColor::White ? 1 : -1)).has_value()
+            && readBoard(king_position.getCol() + i, king_position.getRow() + (opposing_color == PieceColor::White ? 1 : -1))->getColor() == opposing_color
+            && readBoard(king_position.getCol() + i, king_position.getRow() + (opposing_color == PieceColor::White ? 1 : -1))->getType() == PieceType::Pawn) {
             return false;
         }
     }
 
     // Check that piece can reach destination.
-    switch (moving.getType()) {
+    switch (moving_piece.getType()) {
     case PieceType::King:
         if (existInterrumptions(source, destiny)) {
             return false;
@@ -151,16 +163,16 @@ bool GameState::isLegalMove(const BoardCoordinate source, const BoardCoordinate 
         if (destiny.getCol() == BoardCoordinate::columnToInt(BoardCoordinate::Column::G)
             && m_board[BoardCoordinate::columnToInt(BoardCoordinate::Column::H) * 8 + source.getRow()].has_value() && !m_board[BoardCoordinate::columnToInt(BoardCoordinate::Column::H) * 8 + source.getRow()]->hasMoved()
             && movedY == 0
-            && !moving.hasMoved()
-            && isLegalMove(source, BoardCoordinate(BoardCoordinate::Column::F, moving.getColor() == PieceColor::White ? 1 : 8))) {
+            && !moving_piece.hasMoved()
+            && isLegalMove(source, BoardCoordinate(BoardCoordinate::Column::F, moving_piece.getColor() == PieceColor::White ? 1 : 8))) {
             return true;
         }
         if (destiny.getCol() == BoardCoordinate::columnToInt(BoardCoordinate::Column::C)
             && m_board[BoardCoordinate::columnToInt(BoardCoordinate::Column::A) * 8 + source.getRow()].has_value()
             && !m_board[BoardCoordinate::columnToInt(BoardCoordinate::Column::A) * 8 + source.getRow()]->hasMoved()
             && movedY == 0
-            && !moving.hasMoved()
-            && isLegalMove(source, BoardCoordinate(BoardCoordinate::Column::D, moving.getColor() == PieceColor::White ? 1 : 8))) {
+            && !moving_piece.hasMoved()
+            && isLegalMove(source, BoardCoordinate(BoardCoordinate::Column::D, moving_piece.getColor() == PieceColor::White ? 1 : 8))) {
             return true;
         }
         if (movedX > 1 || movedY > 1) {
@@ -194,25 +206,25 @@ bool GameState::isLegalMove(const BoardCoordinate source, const BoardCoordinate 
         }
         return true;
     case PieceType::Pawn:
-        if ((moving.getColor() == PieceColor::White && BoardCoordinate::rowToInt(source.getRow()) > BoardCoordinate::rowToInt(destiny.getRow())) || (moving.getColor() == PieceColor::Black && BoardCoordinate::rowToInt(source.getRow()) < BoardCoordinate::rowToInt(destiny.getRow()))) {
+        if ((moving_piece.getColor() == PieceColor::White && BoardCoordinate::rowToInt(source.getRow()) > BoardCoordinate::rowToInt(destiny.getRow())) || (moving_piece.getColor() == PieceColor::Black && BoardCoordinate::rowToInt(source.getRow()) < BoardCoordinate::rowToInt(destiny.getRow()))) {
             return false;
         }
         if (existInterrumptions(source, destiny)) {
             return false;
         }
-        if (((moving.getColor() == PieceColor::White && source.getRow() == BoardCoordinate::rowToInt(2)) || (moving.getColor() == PieceColor::Black && source.getRow() == BoardCoordinate::rowToInt(7)))
+        if (((moving_piece.getColor() == PieceColor::White && source.getRow() == BoardCoordinate::rowToInt(2)) || (moving_piece.getColor() == PieceColor::Black && source.getRow() == BoardCoordinate::rowToInt(7)))
             && movedX == 0 && movedY == 2 && !this->m_board[destiny.getCol() * 8 + destiny.getRow()].has_value()) {
             return true;
         } else if (movedX == 1
             && movedY == 1
             && (this->m_board[destiny.getCol() * 8 + destiny.getRow()].has_value()
                 || (source.getRow() == BoardCoordinate::rowToInt(5)
-                    && moving.getColor() == PieceColor::White
+                    && moving_piece.getColor() == PieceColor::White
                     && this->m_board[destiny.getCol() * 8 + destiny.getRow() + 1].has_value()
                     && this->m_board[destiny.getCol() * 8 + destiny.getRow() + 1]->getType() == PieceType::Pawn
                     && this->m_board[destiny.getCol() * 8 + destiny.getRow() + 1] == this->pawn_double_moved_last_turn)
                 || (source.getRow() == BoardCoordinate::rowToInt(4)
-                    && moving.getColor() == PieceColor::Black
+                    && moving_piece.getColor() == PieceColor::Black
                     && this->m_board[destiny.getCol() * 8 + destiny.getRow() - 1].has_value()
                     && this->m_board[destiny.getCol() * 8 + destiny.getRow() - 1]->getType() == PieceType::Pawn
                     && this->m_board[destiny.getCol() * 8 + destiny.getRow() - 1] == this->pawn_double_moved_last_turn))) {

@@ -13,11 +13,13 @@ private:
     std::optional<Piece>& accessBoard(short int col, short int row);
     bool existInterrumptions(BoardCoordinate source, BoardCoordinate destiny) const;
     void changeTurnColor();
+    bool belongsToCurrentPlayer(const Piece& piece) const;
+    BoardCoordinate findKingPosition(PieceColor color) const;
 
 public:
     GameState();
+    std::optional<Piece> readBoard(const BoardCoordinate pos) const;
     std::optional<Piece> readBoard(short int col, short int row) const;
-    PieceColor getTurnColor() const;
     bool isLegalMove(const BoardCoordinate source, const BoardCoordinate destiny) const;
     void move(const BoardCoordinate source, const BoardCoordinate destiny);
 };
