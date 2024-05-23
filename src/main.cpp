@@ -12,4 +12,5 @@
 int main()
 {
     GameController game;
+    game.run();
 }
