@@ -33,3 +33,15 @@ PieceType Piece::getType() const
 {
     return m_type;
 }
+
+bool Piece::operator==(const Piece& that) const
+{
+    return m_color == that.m_color
+        && m_type == that.m_type
+        && m_has_moved == that.m_has_moved;
+}
+
+bool Piece::operator!=(const Piece& that) const
+{
+    return !(*this == that);
+}

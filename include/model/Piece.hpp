@@ -26,4 +26,6 @@ public:
     void promotePawnTo(PieceType to_promote);
     PieceColor getColor() const;
     PieceType getType() const;
+    bool operator==(const Piece& that) const;
+    bool operator!=(const Piece& that) const;
 };
