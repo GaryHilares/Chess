@@ -1,17 +1,6 @@
 #pragma once
-
-enum class PieceColor {
-    White = 0,
-    Black = 1
-};
-enum class PieceType {
-    King = 0,
-    Queen = 1,
-    Bishop = 2,
-    Knight = 3,
-    Rook = 4,
-    Pawn = 5
-};
+#include "PieceColor.hpp"
+#include "PieceType.hpp"
 
 class Piece {
 private:
