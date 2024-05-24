@@ -18,3 +18,8 @@ BoardCoordinate::BoardCoordinate(int column, int row)
         throw std::out_of_range("Square which is (" + std::to_string(m_column) + "; " + std::to_string(m_row) + ") is out of the board, (1-8;1-8).");
     }
 }
+
+bool BoardCoordinate::operator==(const BoardCoordinate& that)
+{
+    return this->m_column == that.m_column && this->m_row == that.m_row;
+}

@@ -18,10 +18,6 @@ void GameUI::update(sf::RenderWindow& window)
 
 void GameUI::draw(sf::RenderTarget& target, sf::RenderStates state) const
 {
-    std::optional<Piece> moving_piece = std::nullopt;
-    if (last_square.has_value()) {
-        moving_piece = this->m_game.readBoard(this->last_square.value().getCol(), this->last_square.value().getRow());
-    }
     {
         bool rectangle_is_white = false;
         sf::RectangleShape shape(sf::Vector2f(square_size, square_size));
@@ -43,7 +39,7 @@ void GameUI::draw(sf::RenderTarget& target, sf::RenderStates state) const
     {
         for (unsigned int i = 1; i <= 8; i++) {
             for (unsigned int j = 1; j <= 8; j++) {
-                if (m_game.readBoard(i, j).has_value() && this->m_game.readBoard(i, j) != moving_piece) {
+                if (m_game.readBoard(i, j).has_value() && !(last_square.has_value() && BoardCoordinate(i, j) == last_square.value())) {
                     const sf::Sprite& currentPieceSprite = this->pieces_sprites[(int)this->m_game.readBoard(i, j)->getColor() * 6 + (int)this->m_game.readBoard(i, j)->getType()];
                     sf::Transformable transformer;
                     sf::RenderStates specific_state = state;
@@ -53,7 +49,8 @@ void GameUI::draw(sf::RenderTarget& target, sf::RenderStates state) const
                 }
             }
         }
-        if (moving_piece.has_value()) {
+        if (last_square.has_value()) {
+            std::optional<Piece> moving_piece = this->m_game.readBoard(this->last_square.value().getCol(), this->last_square.value().getRow());
             sf::Window* window = dynamic_cast<sf::Window*>(&target);
             if (window != nullptr) {
                 const sf::Sprite& currentPieceSprite = this->pieces_sprites[(int)moving_piece->getColor() * 6 + (int)moving_piece->getType()];

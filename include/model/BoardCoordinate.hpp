@@ -21,4 +21,5 @@ public:
     BoardCoordinate(int column, int row);
     int getCol() const;
     int getRow() const;
+    bool operator==(const BoardCoordinate& that);
 };
