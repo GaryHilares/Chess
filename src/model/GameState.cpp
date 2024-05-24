@@ -237,7 +237,7 @@ bool GameState::isLegalMove(const BoardCoordinate source, const BoardCoordinate 
 
 void GameState::move(const BoardCoordinate source, const BoardCoordinate destiny)
 {
-    std::optional<Piece>& moving_piece = accessBoard(source.getCol(), destiny.getRow());
+    std::optional<Piece>& moving_piece = accessBoard(source.getCol(), source.getRow());
 
     // Move piece.
     pawn_double_moved_last_turn.reset();
@@ -254,9 +254,10 @@ void GameState::move(const BoardCoordinate source, const BoardCoordinate destiny
             accessBoard(destiny.getCol(), destiny.getRow() - 1).reset();
         }
     }
-    if (readBoard(destiny.getCol(), destiny.getRow()).has_value())
+    if (readBoard(destiny.getCol(), destiny.getRow()).has_value()) {
         // Check if move is a capture, and if it is, remove the targetted piece.
         accessBoard(destiny.getCol(), destiny.getRow()).reset();
+    }
     if (moving_piece->getType() == PieceType::King
         && source.getCol() == BoardColumn::E
         && destiny.getCol() == BoardColumn::C) {
@@ -327,6 +328,7 @@ void GameState::move(const BoardCoordinate source, const BoardCoordinate destiny
     }
     // Move piece
     accessBoard(destiny.getCol(), destiny.getRow()) = moving_piece;
+    moving_piece.reset();
 
     // Change turn color
     changeTurnColor();

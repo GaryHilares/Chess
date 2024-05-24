@@ -1,5 +1,4 @@
 #pragma once
-#include <iostream>
 
 namespace BoardColumn {
     constexpr int A = 1;

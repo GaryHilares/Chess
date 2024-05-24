@@ -1,4 +1,5 @@
 #include "../../include/model/Board.hpp"
+#include <stdexcept>
 
 Board::Board()
     : m_board({ Piece(PieceColor::Black, PieceType::Rook), Piece(PieceColor::Black, PieceType::Pawn), std::nullopt, std::nullopt, std::nullopt, std::nullopt, Piece(PieceColor::White, PieceType::Pawn), Piece(PieceColor::White, PieceType::Rook),

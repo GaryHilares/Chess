@@ -1,4 +1,5 @@
 #include "../../include/model/BoardCoordinate.hpp"
+#include <stdexcept>
 
 int BoardCoordinate::getCol() const
 {
