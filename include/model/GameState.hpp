@@ -12,6 +12,16 @@ private:
     Board m_board;
     std::optional<Piece> pawn_double_moved_last_turn;
     std::optional<Piece>& accessBoard(short int col, short int row);
+
+    /**
+     * @brief Returns true if there is interruptions between the source and the destiny.
+     * @details If coordinates are in a column, row, or diagonal, checks if all of the squares between them (exclusive)
+     *          are empty. If they are, returns false. If they are not empty or if the coordinates are not in a column,
+     *          row or diagonal, returns true.
+     * @param source The source from where start checking.
+     * @param destiny The target to finish checking.
+     * @return True if there are interruptions, false otherwise.
+     */
     bool existInterrumptions(BoardCoordinate source, BoardCoordinate destiny) const;
     void changeTurnColor();
     bool belongsToCurrentPlayer(const Piece& piece) const;

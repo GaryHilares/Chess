@@ -41,13 +41,13 @@ void GameUI::draw(sf::RenderTarget& target, sf::RenderStates state) const
         }
     }
     {
-        for (unsigned int i = 0; i < 8; i++) {
-            for (unsigned int j = 0; j < 8; j++) {
+        for (unsigned int i = 1; i <= 8; i++) {
+            for (unsigned int j = 1; j <= 8; j++) {
                 if (m_game.readBoard(i, j).has_value() && this->m_game.readBoard(i, j) != moving_piece) {
                     const sf::Sprite& currentPieceSprite = this->pieces_sprites[(int)this->m_game.readBoard(i, j)->getColor() * 6 + (int)this->m_game.readBoard(i, j)->getType()];
                     sf::Transformable transformer;
                     sf::RenderStates specific_state = state;
-                    transformer.setPosition(board_pos_x + i * square_size, board_pos_y + j * square_size);
+                    transformer.setPosition(board_pos_x + (i - 1) * square_size, board_pos_y + (8 - j) * square_size);
                     specific_state.transform *= transformer.getTransform();
                     target.draw(currentPieceSprite, specific_state);
                 }
@@ -76,21 +76,21 @@ BoardCoordinate GameUI::fromUiCoordsToBoardCoords(float pos_x, float pos_y)
     int new_pos_y = pos_y + 1;
     switch ((int)pos_x) {
     case 0:
-        return BoardCoordinate(BoardCoordinate::Column::A, new_pos_y);
+        return BoardCoordinate(BoardColumn::A, new_pos_y);
     case 1:
-        return BoardCoordinate(BoardCoordinate::Column::B, new_pos_y);
+        return BoardCoordinate(BoardColumn::B, new_pos_y);
     case 2:
-        return BoardCoordinate(BoardCoordinate::Column::C, new_pos_y);
+        return BoardCoordinate(BoardColumn::C, new_pos_y);
     case 3:
-        return BoardCoordinate(BoardCoordinate::Column::D, new_pos_y);
+        return BoardCoordinate(BoardColumn::D, new_pos_y);
     case 4:
-        return BoardCoordinate(BoardCoordinate::Column::E, new_pos_y);
+        return BoardCoordinate(BoardColumn::E, new_pos_y);
     case 5:
-        return BoardCoordinate(BoardCoordinate::Column::F, new_pos_y);
+        return BoardCoordinate(BoardColumn::F, new_pos_y);
     case 6:
-        return BoardCoordinate(BoardCoordinate::Column::G, new_pos_y);
+        return BoardCoordinate(BoardColumn::G, new_pos_y);
     case 7:
-        return BoardCoordinate(BoardCoordinate::Column::H, new_pos_y);
+        return BoardCoordinate(BoardColumn::H, new_pos_y);
     default:
         throw std::out_of_range("Square is out of possible range");
     }

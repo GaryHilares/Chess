@@ -12,12 +12,17 @@ Board::Board()
 {
 }
 
+std::optional<Piece>& Board::accessBoard(const BoardCoordinate pos)
+{
+    return accessBoard(pos.getCol(), pos.getRow());
+}
+
 std::optional<Piece>& Board::accessBoard(short int col, short int row)
 {
-    if (col > 7 || col < 0 || row > 7 || row < 0) {
+    if (col > 8 || col < 1 || row > 8 || row < 1) {
         throw std::out_of_range("Out of board's range.");
     }
-    return m_board[col * 8 + row];
+    return m_board[(col - 1) * 8 + (8 - row)];
 }
 
 std::optional<Piece> Board::readBoard(const BoardCoordinate pos) const
@@ -27,8 +32,8 @@ std::optional<Piece> Board::readBoard(const BoardCoordinate pos) const
 
 std::optional<Piece> Board::readBoard(short int col, short int row) const
 {
-    if (col > 7 || col < 0 || row > 7 || row < 0) {
+    if (col > 8 || col < 1 || row > 8 || row < 1) {
         return std::nullopt;
     }
-    return m_board[col * 8 + row];
+    return m_board[(col - 1) * 8 + (8 - row)];
 }

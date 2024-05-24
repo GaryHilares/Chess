@@ -1,28 +1,24 @@
 #pragma once
 #include <iostream>
 
+namespace BoardColumn {
+    constexpr int A = 1;
+    constexpr int B = 2;
+    constexpr int C = 3;
+    constexpr int D = 4;
+    constexpr int E = 5;
+    constexpr int F = 6;
+    constexpr int G = 7;
+    constexpr int H = 8;
+}
+
 struct BoardCoordinate {
-public:
-    enum Column {
-        A = 0,
-        B = 1,
-        C = 2,
-        D = 3,
-        E = 4,
-        F = 5,
-        G = 6,
-        H = 7
-    };
-
 private:
-    Column m_column;
-    short int m_row;
+    int m_column;
+    int m_row;
 
 public:
-    BoardCoordinate(Column column, unsigned short int row);
-    short int getCol() const;
-    short int getRow() const;
-    static int columnToInt(Column column_code);
-    static int rowToInt(short int row_code);
-    bool operator==(const BoardCoordinate& other) const;
+    BoardCoordinate(int column, int row);
+    int getCol() const;
+    int getRow() const;
 };
